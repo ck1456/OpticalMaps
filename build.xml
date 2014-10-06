@@ -1,0 +1,33 @@
+<project name="MapResolver" basedir="." default="package">
+
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="bin" />
+	<property name="project.home" location="." />
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" compiler="modern" fork="true" includeantruntime="false" />
+	</target>
+
+	<target name="createjar" depends="compile">
+		<jar destfile="${project.home}/MapResolver.jar" baseDir="${project.home}/bin">
+			<manifest>
+				<attribute name="Main-Class" value="hps.nyu.fa14.MapResolver" />
+			</manifest>
+		</jar>
+	</target>
+
+	<property name="zip.name" value="MapResolver" />
+	<target name="package" depends="createjar">
+		<echo>Zipping...</echo>
+		<zip destfile="dist/${zip.name}.zip">
+			<zipfileset dir="." includes="index.html" prefix="${zip.name}" />
+			<zipfileset dir="src" includes="*.java" prefix="${zip.name}" excludes="test*.java" />
+			<zipfileset dir="bin" includes="*.class" prefix="${zip.name}" excludes="test*.class" />
+		</zip>
+	</target>
+
+</project>
