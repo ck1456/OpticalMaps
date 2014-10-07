@@ -16,7 +16,7 @@ public class OpSample implements Iterable<Double> {
 	public OpSample(List<Double> cuts){
 		for(Double c : cuts){
 			this.cuts.add(c);
-			this.cutsFlipped.add(1.0 -c);
+			this.cutsFlipped.add(1.0 - c);
 		}
 		Collections.sort(this.cuts);
 		Collections.sort(this.cutsFlipped);

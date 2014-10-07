@@ -52,7 +52,8 @@ public class SampleCutter {
 	
 	private static final Random RAND = new Random();
 	private static double jiggle(double p){
-		return p + ((RAND.nextDouble() - 0.5) * eps);
+		// ensure the jiggled value is still in the right range
+		return Math.min(1, Math.max(0, p + ((RAND.nextDouble() - 0.5) * eps)));
 	}
 	
 	private static void flip(List<Double> cuts){
