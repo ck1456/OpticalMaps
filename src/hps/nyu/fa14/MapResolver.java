@@ -1,5 +1,7 @@
 package hps.nyu.fa14;
 
+import hps.nyu.fa14.solver.RandomSolver;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,14 +17,14 @@ public class MapResolver {
 	}
 
 	public OpSolution resolve(){
-		// Generate and return an OpSolution
-		OpSolution solution = OpSolution.generateRandom(this.set);
-		
 		// TODO: This needs to be implemented better
+		// Instantiate whatever type of solver you want here
+		ISolutionFinder solver = new RandomSolver();
 		
+		// Generate and return an OpSolution
+		OpSolution solution = solver.generateSolution(set);
 		return solution;
 	}
-	
 	
 	public static void main(String[] args) throws NumberFormatException,
 			FileNotFoundException, IOException {

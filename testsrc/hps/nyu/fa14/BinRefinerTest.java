@@ -18,15 +18,13 @@ public class BinRefinerTest {
 		BinCounter counter = new BinCounter(OpSolution.trivial(set));
 		int[] topBins = BinCounter.getPercentTopBins(counter.count(BIN_COUNT), .1);
 
-
 		OpSample newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
 		
 		BinRefiner refiner = new BinRefiner(newBinned);
 		OpSolution solution0 = refiner.genSolution(set);
 		
+		// TODO: Assert something stronger
 		assertNotNull(solution0);
-		
-		// TODO: Now iterate on this solution
 	}
 
 }

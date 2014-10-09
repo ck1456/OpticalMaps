@@ -46,7 +46,16 @@ public class BinCounter {
 	 */
 	public static int[] getPercentTopBins(int[] bins, double frac){
 		int binCount = (int)(bins.length * frac);
-		// find the top binCount bins and return them
+		return getTopBins(bins, binCount);
+	}
+	
+	/**
+	 * For the specified bins, returns a number of the top ranked bins
+	 * @param bins
+	 * @param binCount
+	 * @return
+	 */
+	public static int[] getTopBins(int[] bins, int binCount){
 		int[] topBins = new int[binCount];
 		
 		List<Integer> sortedBins = new ArrayList<Integer>();
@@ -69,6 +78,11 @@ public class BinCounter {
 		return topBins;
 	}
 	
+	// TODO: Implement a 2-means clustering algorithm to determine how many bins to return
+	public static int[] getPercentTopBins(int[] bins){
+		throw new  UnsupportedOperationException("Not Implemented");
+		
+	}
 	public static String binString(int[] bins){
 		StringBuilder sb = new StringBuilder();
 		

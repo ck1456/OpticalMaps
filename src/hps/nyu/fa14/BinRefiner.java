@@ -9,7 +9,7 @@ public class BinRefiner {
 
 	public final OpSample target;
 	
-	BinRefiner(OpSample target){
+	public BinRefiner(OpSample target){
 		this.target = target;
 	}
 	
@@ -41,6 +41,7 @@ public class BinRefiner {
 		Collections.sort(rankedSamples, RankedOpSample.RANK_BY_DIFF);
 		
 		// choose the top x percent, then mark the others garbage
+		// TODO: Consider doing Farthest First K means clustering in order to determine the split
 		double keep = .7;
 		for(int i = 0; i < set.size(); i++){
 			solution.isTarget[i] = false;
