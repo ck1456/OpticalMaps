@@ -9,12 +9,17 @@ public class BinRefiner {
 
 	public final OpSample target;
 	
+	public double keepPortion = .7;
+	
 	public BinRefiner(OpSample target){
 		this.target = target;
 	}
 	
+	
+	
 	public OpSolution genSolution(SampleSet set){
 		OpSolution solution = new OpSolution(set);
+		solution.ideal = target;
 	
 		// get the min diff for each sample with the target
 		// and record if flipped
@@ -42,7 +47,7 @@ public class BinRefiner {
 		
 		// choose the top x percent, then mark the others garbage
 		// TODO: Consider doing Farthest First K means clustering in order to determine the split
-		double keep = .7;
+		double keep = keepPortion;
 		for(int i = 0; i < set.size(); i++){
 			solution.isTarget[i] = false;
 		}

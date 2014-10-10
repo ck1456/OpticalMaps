@@ -20,7 +20,7 @@ public class OpSolutionTest {
 		solution.isFlipped[2] = true;
 		
 		int sampleCount = 0;
-		for(OpSample s : solution.getSamples()){
+		for(OpSample s : solution.getTargetSamples()){
 			++sampleCount;
 			if(sampleCount == 1){
 				assertFalse(s.isFlipped());

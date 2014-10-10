@@ -1,6 +1,6 @@
 package hps.nyu.fa14;
 
-import hps.nyu.fa14.solver.RandomSolver;
+import hps.nyu.fa14.solver.CutClusterSolver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class MapResolver {
+public class MapResolver implements Runnable {
 
 	private final SampleSet set;
 
@@ -16,10 +16,16 @@ public class MapResolver {
 		this.set = set;
 	}
 
+	public ISolutionViewer viewer;
+	
 	public OpSolution resolve(){
+		if(viewer == null){
+			viewer = new NullSolutionViewer();
+		}
 		// TODO: This needs to be implemented better
 		// Instantiate whatever type of solver you want here
-		ISolutionFinder solver = new RandomSolver();
+		// ISolutionFinder solver = new RandomSolver();
+		ISolutionFinder solver = new CutClusterSolver(viewer);
 		
 		// Generate and return an OpSolution
 		OpSolution solution = solver.generateSolution(set);
@@ -48,6 +54,12 @@ public class MapResolver {
 		// How to use it
 		System.out.println("java -jar MapResolver <input> <output>");
 		System.exit(1);
+	}
+
+	@Override
+	public void run() {
+		resolve();
+		
 	}
 
 }

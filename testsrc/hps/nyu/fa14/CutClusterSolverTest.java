@@ -16,7 +16,7 @@ public class CutClusterSolverTest {
 		File sampleFile = new File("data/test_problem_0_num_0.txt");
 		SampleSet set = SampleSet.parse(new FileInputStream(sampleFile));
 		
-		CutClusterSolver solver = new CutClusterSolver();
+		CutClusterSolver solver = new CutClusterSolver(new NullSolutionViewer());
 		OpSolution solution = solver.generateSolution(set);
 		
 		// TODO: Assert something stronger

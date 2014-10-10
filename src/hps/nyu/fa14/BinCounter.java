@@ -17,7 +17,7 @@ public class BinCounter {
 	public int[] count(int numBins) {
 		int[] bins = new int[numBins];
 		
-		for(OpSample s : solution.getSamples()){
+		for(OpSample s : solution.getTargetSamples()){
 			for(Double cut : s){
 				int bin = (int)Math.floor(cut * numBins);
 				bin = Math.min(bin, numBins - 1); // Make sure the bin is in range

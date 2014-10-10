@@ -9,9 +9,9 @@ import java.util.Random;
 
 public class OpSolution {
 
-	private final SampleSet set;
+	public final SampleSet set;
 
-	private OpSample ideal;
+	public OpSample ideal;
 
 	public final boolean[] isTarget;
 	public final boolean[] isFlipped;
@@ -22,14 +22,13 @@ public class OpSolution {
 		isFlipped = new boolean[this.set.size()];
 	}
 
-	public Iterable<OpSample> getSamples() {
+	public Iterable<OpSample> getTargetSamples() {
 
 		return new Iterable<OpSample>() {
 			@Override
 			public Iterator<OpSample> iterator() {
-				return new SampleIterator();
+				return new TargetSampleIterator();
 			}
-
 		};
 	}
 
@@ -37,13 +36,13 @@ public class OpSolution {
 	 * returns all of the samples that have not been marked as noise, in their
 	 * correct flip orientation
 	 */
-	private class SampleIterator implements Iterator<OpSample> {
+	private class TargetSampleIterator implements Iterator<OpSample> {
 
 		int nextPosition;
 
 		OpSample next = null;
 
-		SampleIterator() {
+		TargetSampleIterator() {
 			setNext();
 		}
 
@@ -80,7 +79,6 @@ public class OpSolution {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
-
 	}
 
 	public void write(OutputStream output) throws IOException {
