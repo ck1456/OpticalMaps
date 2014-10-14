@@ -51,7 +51,7 @@ public class CutClusterSolver implements ISolutionFinder {
 					targetCount);
 			newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
 			refiner = new BinRefiner(newBinned);
-			refiner.keepPortion = (i + 1) * 1.0 / iterations;
+			refiner.keepPortion = (i + 1) * 0.7 / iterations;
 			OpSolution nextSolution = refiner.genSolution(set);
 
 			viewer.update(nextSolution);
