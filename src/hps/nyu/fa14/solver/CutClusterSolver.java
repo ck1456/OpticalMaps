@@ -10,7 +10,8 @@ import hps.nyu.fa14.SampleSet;
 
 public class CutClusterSolver implements ISolutionFinder {
 
-	private final int BIN_COUNT = 1000;
+	private final int BIN_COUNT = 500;
+	private final int COLLAPSE_BIN_COUNT = 11;
 	private final int TARGET_BIN_COUNT = 40;
 
 	private final ISolutionViewer viewer;
@@ -28,7 +29,7 @@ public class CutClusterSolver implements ISolutionFinder {
 
 		// Choose the top some percent of the bins and create a small target
 		int[] topBins = BinCounter.getPercentTopBins(counter.count(BIN_COUNT),
-				.005);
+				.005, COLLAPSE_BIN_COUNT);
 		OpSample newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
 
 		// Refine the solution based on finding the samples that are most
@@ -48,7 +49,7 @@ public class CutClusterSolver implements ISolutionFinder {
 			counter = new BinCounter(solution);
 			int targetCount = (int) (i + 1) * TARGET_BIN_COUNT / iterations;
 			topBins = BinCounter.getTopBins(counter.count(BIN_COUNT),
-					targetCount);
+					targetCount, COLLAPSE_BIN_COUNT);
 			newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
 			refiner = new BinRefiner(newBinned);
 			refiner.keepPortion = (i + 1) * 0.7 / iterations;

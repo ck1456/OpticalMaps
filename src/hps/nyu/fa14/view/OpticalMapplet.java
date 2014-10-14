@@ -1,5 +1,6 @@
 package hps.nyu.fa14.view;
 
+import hps.nyu.fa14.CoherenceScorer;
 import hps.nyu.fa14.ISolutionViewer;
 import hps.nyu.fa14.MapResolver;
 import hps.nyu.fa14.OpSample;
@@ -58,7 +59,7 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 
 	public OpticalMapplet() throws Exception {
 		SampleSet set = SampleSet.parse(new FileInputStream(new File(
-				"../data/test_problem_0_num_0.txt")));
+				"../data/test_problem_2_num_2.txt")));
 
 		MapResolver resolver = new MapResolver(set);
 		resolver.viewer = this;
@@ -139,6 +140,9 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 	@Override
 	public void update(OpSolution newSolution) {
 		solution = newSolution;
+		CoherenceScorer scorer = new CoherenceScorer();
+		double score = scorer.score(newSolution);
+		System.out.println("Score: " + score);
 	}
 
 }
