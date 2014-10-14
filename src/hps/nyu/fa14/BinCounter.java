@@ -16,14 +16,16 @@ public class BinCounter {
 
 	public int[] count(int numBins) {
 		int[] bins = new int[numBins];
-		
+		//System.out.println("HAHAHA");
 		for(OpSample s : solution.getTargetSamples()){
 			for(Double cut : s){
 				int bin = (int)Math.floor(cut * numBins);
 				bin = Math.min(bin, numBins - 1); // Make sure the bin is in range
 				bins[bin]++;
+				//System.out.print(bin + " ");
 			}
 		}
+		//System.out.println("\ndone "+bins.length);
 		return bins;
 	}
 	
@@ -74,7 +76,6 @@ public class BinCounter {
 			int binValue = sortedBins.get(i);
 			topBins[i] = binCountMap.get(binValue).remove(0);
 		}
-				
 		return topBins;
 	}
 	
