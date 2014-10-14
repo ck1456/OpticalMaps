@@ -54,10 +54,48 @@ public class OpSample implements Iterable<Double> {
 			double cutDiff = Math.min(Math.abs(cutToFind - currentCut), Math.abs(cutToFind - nextCut));
 			diff += cutDiff;
 		}
-		
-		
 		return diff;
 	}
+	
+	/**
+	 * Keeps track of all of the differences and only uses some minimum portion of them
+	 * to calculate the difference.  This allows partial digestion to have less of an effect on
+	 * the results
+	 * @param other
+	 * @return
+	 */
+	public double partialDiff(OpSample other, double fraction){
+		// For each cut in the other, find the closest cut in this sample, and accumulate the
+		// absolute value of difference in points
+		List<Double> otherPoints = new ArrayList<Double>();
+		for(Double d : other){ // takes into account whether it is flipped
+			otherPoints.add(d);
+		}
+		List<Double> thisCuts = (flipped ? cutsFlipped : cuts);
+		
+		List<Double> diffs = new ArrayList<Double>();
+		int thisPos = 0;
+		double currentCut = 0.0;
+		double nextCut = 0.0;
+		for(int i = 0; i < otherPoints.size(); i++){
+			double cutToFind = otherPoints.get(i);
+			while(nextCut <= cutToFind && thisPos < thisCuts.size()){
+				currentCut = nextCut;
+				nextCut = thisCuts.get(thisPos++);
+			}
+			double cutDiff = Math.min(Math.abs(cutToFind - currentCut), Math.abs(cutToFind - nextCut));
+			diffs.add(cutDiff);
+		}
+		// Only use the top portion of the diffs to reduce the impact of partial digestion
+		Collections.sort(diffs);
+		double totalDiff = 0.0;
+		for(int i = 0; i < diffs.size() * fraction; i++){
+			totalDiff += diffs.get(i);
+		}
+		return totalDiff;
+	}
+	
+	
 		
 	private boolean flipped = false;
 	

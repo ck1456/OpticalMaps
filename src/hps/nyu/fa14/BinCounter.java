@@ -3,8 +3,10 @@ package hps.nyu.fa14;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BinCounter {
 
@@ -39,6 +41,10 @@ public class BinCounter {
 		return new OpSample(cuts);
 	}
 	
+	public static int[] getPercentTopBins(int[] bins, double frac){
+		int binCount = (int)(bins.length * frac);
+		return getTopBins(bins, binCount, 1);
+	}
 	
 	/**
 	 * For the specified bins, returns a fraction of the top ranked bins
@@ -46,9 +52,9 @@ public class BinCounter {
 	 * @param frac
 	 * @return
 	 */
-	public static int[] getPercentTopBins(int[] bins, double frac){
+	public static int[] getPercentTopBins(int[] bins, double frac, int collapseBins){
 		int binCount = (int)(bins.length * frac);
-		return getTopBins(bins, binCount);
+		return getTopBins(bins, binCount, collapseBins);
 	}
 	
 	/**
@@ -57,7 +63,7 @@ public class BinCounter {
 	 * @param binCount
 	 * @return
 	 */
-	public static int[] getTopBins(int[] bins, int binCount){
+	public static int[] getTopBins(int[] bins, int binCount, int collapseBins){
 		int[] topBins = new int[binCount];
 		
 		List<Integer> sortedBins = new ArrayList<Integer>();
@@ -72,9 +78,26 @@ public class BinCounter {
 		Collections.sort(sortedBins);
 		Collections.reverse(sortedBins); // sort descending
 		
-		for(int i = 0; i < binCount; i++){
-			int binValue = sortedBins.get(i);
-			topBins[i] = binCountMap.get(binValue).remove(0);
+		Set<Integer> countedBins = new HashSet<Integer>();
+		int i = 0;
+		int j = 0;
+		while(i < binCount && j < sortedBins.size()){
+//		for(int i = 0; i < binCount; i++){
+			int binValue = sortedBins.get(j++);
+			int binIndex = binCountMap.get(binValue).remove(0); 
+			if(!countedBins.contains(binIndex)){
+				topBins[i++] = binIndex;
+				countedBins.add(binIndex);
+				// Add the other ones to ignore
+				for(int b = 1; b < collapseBins / 2; b++){
+					if(binIndex + b < bins.length){
+						countedBins.add(binIndex + b);
+					}
+					if(binIndex - b >= 0){
+						countedBins.add(binIndex - b);
+					}
+				}
+			}
 		}
 		return topBins;
 	}
