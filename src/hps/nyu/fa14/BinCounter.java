@@ -62,7 +62,7 @@ public class BinCounter {
 	 */
 	public static int[] getTopBins(int[] bins, int binCount, int collapseBins){
 		int[] topBins = new int[binCount];
-		System.out.println("BIN COUNT "+binCount);
+		//System.out.println("BIN COUNT "+binCount);
 		List<Integer> sortedBins = new ArrayList<Integer>();
 		Map<Integer, List<Integer>> binCountMap = new HashMap<Integer, List<Integer>>();
 		for(int i = 0; i < bins.length; ++i){

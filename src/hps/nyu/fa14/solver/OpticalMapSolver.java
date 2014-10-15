@@ -48,6 +48,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     // included
     OpSolution solution = solution0;
     viewer.update(solution);
+    OpSolution nextSolution = solution;
 
     // TODO: Figure out how to cluster for the right percentage of bins
     int iterations = 10;
@@ -69,7 +70,7 @@ public class OpticalMapSolver implements ISolutionFinder {
         s.flip(false);
         double diff = s.cosine(newBinned);
         s.flip(true);
-        double flipDiff = s.diff(newBinned);
+        double flipDiff = s.cosine(newBinned);
         RankedOpSample ranked = new RankedOpSample();
         ranked.sample = s;
         ranked.sampleIndex = i;
@@ -97,13 +98,13 @@ public class OpticalMapSolver implements ISolutionFinder {
         solution.isFlipped[s.sampleIndex] = s.flipped;
       }
       
-      refiner = new BinRefiner(newBinned);
+      //refiner = new BinRefiner(newBinned);
       double digestionProbability = 0.7;
       if(set.problemType != 3) {
         digestionProbability = set.digestionProbability;
       }
       refiner.keepPortion = (j + 1) * digestionProbability / iterations;
-      OpSolution nextSolution = refiner.genSolution(set);
+      //OpSolution nextSolution = refiner.genSolution(set);
 
       viewer.update(nextSolution);
       // See how much the solution changed
