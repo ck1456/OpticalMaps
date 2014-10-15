@@ -135,12 +135,15 @@ public class SolutionEvaluator {
           }
         }
         else {
-          Boolean isTarget = Boolean.valueOf(line.split(" ")[0]);
-          Boolean isFlipped = Boolean.valueOf(line.split(" ")[1]);
-          validity.add(isTarget);
-          flips.add(isFlipped);
+          String [] values = line.split(" ");
+          Boolean isTarget = (Integer.parseInt(values[0]) == 1) ? true : false;
+          Boolean isFlipped = false;
+          if(isTarget) {
+            isFlipped = (Integer.parseInt(values[1]) == 1) ? true : false;
+          }
+          moleculeValidity.add(isTarget);
+          flipList.add(isFlipped);
         }
-        //line = br.readLine();
       }
       br.close();
     } 

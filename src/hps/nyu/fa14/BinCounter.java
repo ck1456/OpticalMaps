@@ -18,16 +18,13 @@ public class BinCounter {
 
 	public int[] count(int numBins) {
 		int[] bins = new int[numBins];
-		//System.out.println("HAHAHA");
 		for(OpSample s : solution.getTargetSamples()){
 			for(Double cut : s){
 				int bin = (int)Math.floor(cut * numBins);
 				bin = Math.min(bin, numBins - 1); // Make sure the bin is in range
 				bins[bin]++;
-				//System.out.print(bin + " ");
 			}
 		}
-		//System.out.println("\ndone "+bins.length);
 		return bins;
 	}
 	
@@ -65,7 +62,7 @@ public class BinCounter {
 	 */
 	public static int[] getTopBins(int[] bins, int binCount, int collapseBins){
 		int[] topBins = new int[binCount];
-		
+		System.out.println("BIN COUNT "+binCount);
 		List<Integer> sortedBins = new ArrayList<Integer>();
 		Map<Integer, List<Integer>> binCountMap = new HashMap<Integer, List<Integer>>();
 		for(int i = 0; i < bins.length; ++i){
@@ -84,7 +81,7 @@ public class BinCounter {
 		while(i < binCount && j < sortedBins.size()){
 //		for(int i = 0; i < binCount; i++){
 			int binValue = sortedBins.get(j++);
-			int binIndex = binCountMap.get(binValue).remove(0); 
+			int binIndex = binCountMap.get(binValue).remove(0);
 			if(!countedBins.contains(binIndex)){
 				topBins[i++] = binIndex;
 				countedBins.add(binIndex);
