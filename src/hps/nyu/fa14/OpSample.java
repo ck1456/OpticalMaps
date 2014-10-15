@@ -78,9 +78,9 @@ public class OpSample implements Iterable<Double> {
 		}
 		// Do this with paired cut points instead
 		//		List<Double> alignedCutPoints = getAlignedCutPoints(otherPoints);
-		List<Double> alignedCutPoints = getPairedCutPoints(otherPoints);
-		double cosine = dot(alignedCutPoints, otherPoints)
-				/ (getVectorLength(alignedCutPoints) * getVectorLength(otherPoints));
+		List<List<Double>> alignedCutPoints = getPairedCutPoints(otherPoints);
+		double cosine = dot(alignedCutPoints.get(0), alignedCutPoints.get(1))
+				/ (getVectorLength(alignedCutPoints.get(0)) * getVectorLength(alignedCutPoints.get(1)));
 		//System.out.println("Cosine: "+cosine);
 		return cosine;
 	}
@@ -108,8 +108,9 @@ public class OpSample implements Iterable<Double> {
 	}
 
 	//TODO: Can add partial digestion parameter here
-	private List<Double> getPairedCutPoints(List<Double> otherPoints) {
-		List<Double> pairedCutPoints = new ArrayList<Double>();
+	private List<List<Double>> getPairedCutPoints(List<Double> otherPoints) {
+		List<Double> thisPairedCutPoints = new ArrayList<Double>();
+		List<Double> otherPairedCutPoints = new ArrayList<Double>();
 		List<Double> thisCuts = (flipped ? cutsFlipped : cuts);
 		
 		// Calculate all of the pairwise distances
@@ -122,13 +123,13 @@ public class OpSample implements Iterable<Double> {
 		
 		Set<Integer> pairedThis = new HashSet<Integer>();
 		Set<Integer> pairedOther = new HashSet<Integer>();
-		for (int k = 0; k < otherPoints.size(); k++) {
+		for (int k = 0; k < otherPoints.size() && k < thisCuts.size(); k++) {
 			double minDist = Double.MAX_VALUE;
 			int minI = -1;
 			int minJ = -1;
 			for (int i = 0; i < thisCuts.size(); i++) {
 				for (int j = 0; j < otherPoints.size(); j++) {
-					if ((!pairedThis.contains(i) || pairedOther.contains(j))) {
+					if (!(pairedThis.contains(i) || pairedOther.contains(j))) {
 						if (dist[i][j] < minDist) {
 							minDist = dist[i][j];
 							minI = i;
@@ -137,13 +138,18 @@ public class OpSample implements Iterable<Double> {
 					}
 				}
 			}
-			pairedCutPoints.add(thisCuts.get(minI));
+			thisPairedCutPoints.add(thisCuts.get(minI));
+			otherPairedCutPoints.add(otherPoints.get(minJ));
 			pairedThis.add(minI);
 			pairedOther.add(minJ);
 		}
-		Collections.sort(pairedCutPoints);
+		Collections.sort(thisPairedCutPoints);
+		Collections.sort(otherPairedCutPoints);
 		
-		return pairedCutPoints;
+		List<List<Double>> pairedVectors = new ArrayList<List<Double>>();
+		pairedVectors.add(thisPairedCutPoints);
+		pairedVectors.add(otherPairedCutPoints);
+		return pairedVectors;
 	}
 
 	private static double dot(List<Double> list1, List<Double> list2) {
