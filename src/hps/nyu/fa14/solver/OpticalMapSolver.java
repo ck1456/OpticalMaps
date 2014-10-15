@@ -58,6 +58,9 @@ public class OpticalMapSolver implements ISolutionFinder {
       topBins = BinCounter.getTopBins(counter.count(BIN_COUNT),
           targetCount, COLLAPSE_BIN_COUNT);
       newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
+      
+      OpSolution nextSolution = new OpSolution(set);
+      nextSolution.ideal = newBinned;
 
       // and record if flipped
       List<RankedOpSample> rankedSamples = new ArrayList<RankedOpSample>(
@@ -71,11 +74,11 @@ public class OpticalMapSolver implements ISolutionFinder {
         RankedOpSample ranked = new RankedOpSample();
         ranked.sample = s;
         ranked.sampleIndex = i;
-        if (diff <= flipDiff) {
-          ranked.diff = diff;
-        } else {
+        if (diff < flipDiff) {
           ranked.diff = flipDiff;
           ranked.flipped = true;
+        } else {
+          ranked.diff = diff;
         }
         rankedSamples.add(ranked);
       }
@@ -92,20 +95,20 @@ public class OpticalMapSolver implements ISolutionFinder {
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
       int cutoff = maxIndex(rankDt);
+      System.out.println("Cut off "+cutoff);
 
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
-        solution.isTarget[i] = false;
+        nextSolution.isTarget[i] = false;
       }
       for (int i = 0; i < set.size(); i++) {
         RankedOpSample s = rankedSamples.get(i);
         if (i < cutoff) {
-          solution.isTarget[s.sampleIndex] = true;
-          solution.isFlipped[s.sampleIndex] = s.flipped;
+          nextSolution.isTarget[s.sampleIndex] = true;
+          nextSolution.isFlipped[s.sampleIndex] = s.flipped;
         }
       }
 
-      OpSolution nextSolution = solution;
       nextSolution.ideal = newBinned;
 
       viewer.update(nextSolution);
@@ -120,12 +123,15 @@ public class OpticalMapSolver implements ISolutionFinder {
   private static List<Double> dt(List<Double> points) {
     int window = 1;
     List<Double> derivatives = new ArrayList<Double>();
-    for (int i = 0; i < points.size() - window; i++) {
-      double d = (points.get(i + window) - points.get(i));
-      if (i == 0) { // Make sure to return a vector of the same length
+    for (int i = 0; i < points.size(); i++) {
+      if (i != (points.size() - 1)) { // Make sure to return a vector of the same length
+        double d = (points.get(i+window) - points.get(i));
         derivatives.add(d);
       }
-      derivatives.add(d);
+      else {
+        double d = (points.get(i) - points.get(i - window));
+        derivatives.add(d);
+      }
     }
     return derivatives;
   }
