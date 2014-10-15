@@ -99,7 +99,7 @@ public class OpSample implements Iterable<Double> {
     return cosine;
   }
   
-  private double dot(List<Double> list1, List<Double> list2) {
+  private static double dot(List<Double> list1, List<Double> list2) {
     double sum = 0;
     if(list1.size() != list2.size()) {
       throw new RuntimeException();
@@ -110,9 +110,9 @@ public class OpSample implements Iterable<Double> {
     return sum;
   }
   
-  private double getVectorLength(List<Double> list) {
+  private static double getVectorLength(List<Double> list) {
     double sum = 0;
-    for(double l:list) {
+    for(double l : list) {
       sum += l*l;
     }
     return Math.sqrt(sum);
