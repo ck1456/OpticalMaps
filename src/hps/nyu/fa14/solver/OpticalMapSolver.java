@@ -7,10 +7,12 @@ import java.util.List;
 
 import hps.nyu.fa14.BinCounter;
 import hps.nyu.fa14.BinRefiner;
+import hps.nyu.fa14.CosineScorer;
 import hps.nyu.fa14.ISolutionFinder;
 import hps.nyu.fa14.ISolutionViewer;
 import hps.nyu.fa14.OpSample;
 import hps.nyu.fa14.OpSolution;
+import hps.nyu.fa14.SampleNeighborhood;
 import hps.nyu.fa14.SampleSet;
 
 public class OpticalMapSolver implements ISolutionFinder {
@@ -42,15 +44,13 @@ public class OpticalMapSolver implements ISolutionFinder {
     // Refine the solution based on finding the samples that are most
     // similar to the small target
     BinRefiner refiner = new BinRefiner(newBinned);
-    solution0 = refiner.genSolution(set); // mostly eliminates
-    // noise, we hope
+    solution0 = refiner.genSolution(set); // mostly eliminates noise, we hope
 
     // Iterate by counting the bins for only the samples that remain
     // included
     OpSolution solution = solution0;
     viewer.update(solution);
 
-    // TODO: Figure out how to cluster for the right percentage of bins
     int iterations = 10;
     for (int j = 0; j < iterations; j++) {
       counter = new BinCounter(solution);
@@ -117,6 +117,35 @@ public class OpticalMapSolver implements ISolutionFinder {
       solution = nextSolution;
     }
 
+    
+    // Implement Local search here to find the best scoring ideal target
+    OpSolution bestSolution = solution;
+    OpSample bestTarget = bestSolution.ideal;
+    CosineScorer scorer = new CosineScorer();
+    double nDist = 0.1;
+    double gain = 1.0;
+    int gIter = 0;
+    while(gain > 0.0){
+    	gain = 0.0;
+    	gIter++;
+    	bestSolution.ideal = bestTarget;
+    	double best = scorer.score(bestSolution);
+    	SampleNeighborhood neighborhood = new SampleNeighborhood(bestTarget);
+//    	double bestNeighbor = 0.0;
+    	for(OpSample t : neighborhood.genNeighbors(nDist)){
+    		bestSolution.ideal = t;
+    		double nBest = scorer.score(bestSolution);
+    		if(nBest > best){
+    			gain = nBest - best;
+    			best = nBest;
+    			bestTarget = t;
+    		}
+    	}
+    	System.out.println("Best: " + best + " gain: " + gain);
+    }
+    System.out.println("Optimize over " + gIter + " iterations");
+    bestSolution.ideal = bestTarget;
+    
     return solution;
   }
 

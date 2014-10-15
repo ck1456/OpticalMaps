@@ -35,13 +35,12 @@ public class MapResolver implements Runnable {
 	
 	public static void main(String[] args) throws NumberFormatException,
 			FileNotFoundException, IOException {
-		if (args.length != 3) {
+		if (args.length != 2) {
 			usage();
 		}
 		// first parameter is input
 		String inputFile = args[0];
 		String outputFile = args[1];
-		String goldFile = args[2];
 
 		SampleSet inputSet = SampleSet.parse(new FileInputStream(new File(
 				inputFile)));
@@ -50,20 +49,16 @@ public class MapResolver implements Runnable {
 		OpSolution solution = resolver.resolve();
 		
 		solution.write(new FileOutputStream(new File(outputFile)));
-		SolutionEvaluator solutionEvaluator = new SolutionEvaluator(goldFile);
-		System.out.println(solutionEvaluator.evaluateSolution(args[1]));
 	}
 
 	private static void usage() {
 		// How to use it
-		System.out.println("java -jar MapResolver <input> <output> <gold file>");
+		System.out.println("java -jar MapResolver <input> <output>");
 		System.exit(1);
 	}
 
 	@Override
 	public void run() {
 		resolve();
-		
 	}
-
 }

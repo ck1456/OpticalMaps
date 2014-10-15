@@ -60,7 +60,7 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 
 	public OpticalMapplet() throws Exception {
 		SampleSet set = SampleSet.parse(new FileInputStream(new File(
-				"../data/test_problem_1_num_0.txt")));
+				"../data/test_problem_2_num_0.txt")));
 
 		MapResolver resolver = new MapResolver(set);
 		resolver.viewer = this;
