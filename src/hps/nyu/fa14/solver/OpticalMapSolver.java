@@ -110,7 +110,7 @@ public class OpticalMapSolver implements ISolutionFinder {
         // According to the spec, there are no noise molecules in these problem types.
         cutoff = rankDt.size();
       } else {
-        System.out.println("Cut off "+cutoff);
+        //System.out.println("Cut off "+cutoff);
       }
       //System.out.println("Cut off "+cutoff);
       
