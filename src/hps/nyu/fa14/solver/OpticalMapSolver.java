@@ -189,7 +189,15 @@ public class OpticalMapSolver implements ISolutionFinder {
     for(Double c : target){
       if(c - last < eps){
         // suppress this point by averaging the two
-        newCuts.add((c + last)/ 2.0);
+        //newCuts.add((c + last)/ 2.0);
+        if(getCutPointToRemove(last, c, guess.set) == last) {
+          //remove last
+          newCuts.add(c);
+        }
+        else {
+          //remove c
+          newCuts.add(last);
+        }
         last = -1;
       } else {
         if(last >= 0){
