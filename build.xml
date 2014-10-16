@@ -2,13 +2,16 @@
 
 	<property name="src.dir" value="src" />
 	<property name="build.dir" value="bin" />
+	<property name="dist.dir" value="dist" />
 	<property name="project.home" location="." />
 
 	<target name="clean">
 		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
 	</target>
 
 	<target name="compile">
+		<mkdir dir="${build.dir}" />
 		<javac srcdir="${src.dir}" destdir="${build.dir}" compiler="modern" fork="true" includeantruntime="false" />
 	</target>
 
@@ -23,11 +26,12 @@
 	<property name="zip.name" value="MapResolver" />
 	<target name="package" depends="createjar">
 		<echo>Zipping...</echo>
-		<zip destfile="dist/${zip.name}.zip">
+		<mkdir dir="${dist.dir}" />
+		<zip destfile="${dist.dir}/${zip.name}.zip">
 			<zipfileset dir="." includes="MapResolver.jar" prefix="${zip.name}" />
 			<zipfileset dir="." includes="build.xml" prefix="${zip.name}" />
 			<zipfileset dir="src" includes="**/*.java" prefix="${zip.name}/src" />
-			<zipfileset dir="testsrc" includes="**/*.java" prefix="${zip.name}/src" />
+			<!--<zipfileset dir="testsrc" includes="**/*.java" prefix="${zip.name}/testsrc" />-->
 		</zip>
 	</target>
 
