@@ -39,7 +39,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     int[] topBins = BinCounter.getPercentTopBins(counter.count(BIN_COUNT),
         .005, COLLAPSE_BIN_COUNT);
     OpSample newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
-    System.out.println("size of bins " + newBinned.size());
+    //System.out.println("size of bins " + newBinned.size());
 
     // Refine the solution based on finding the samples that are most
     // similar to the small target
@@ -51,8 +51,6 @@ public class OpticalMapSolver implements ISolutionFinder {
     OpSolution solution = solution0;
     viewer.update(solution);
 
-    int totalCutoff = 0;
-    int averageCutoff = 0;
     int iterations = 10;
     for (int j = 0; j < iterations; j++) {
       counter = new BinCounter(solution);
@@ -76,14 +74,6 @@ public class OpticalMapSolver implements ISolutionFinder {
         RankedOpSample ranked = new RankedOpSample();
         ranked.sample = s;
         ranked.sampleIndex = i;
-        
-        /*if (diff <= flipDiff) {
-          ranked.diff = diff;
-        } else {
-          ranked.flipped = true;
-          ranked.diff = flipDiff;
-        }*/
-        
         if (diff < flipDiff) {
           ranked.diff = flipDiff;
           ranked.flipped = true;
@@ -99,28 +89,38 @@ public class OpticalMapSolver implements ISolutionFinder {
 
       // Calculate the second derivative
       List<Double> diffs = new ArrayList<Double>();
+      List<Integer> rankOrder = new ArrayList<Integer>();
       for (RankedOpSample s : rankedSamples) {
         diffs.add(s.diff);
+        rankOrder.add(s.sampleIndex);
       }
+      nextSolution.rankedOrder = rankOrder;
+      StringBuilder sb = new StringBuilder();
+      for(Double d : diffs){
+        sb.append("" + d + ",");
+      }
+      String data = sb.toString();
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
-      //int cutoff = maxIndex(rankDt);
-      //System.out.println("Cut off "+cutoff);
       
       //We need to find where the derivative of the slope is decreasing fastest
       //so we need dt(dt()) to be lowest
-      int cutoff = minIndex(rankDt);
-      totalCutoff += cutoff;
-      averageCutoff = (int) (totalCutoff / (j+1));
-      System.out.println("Cut off "+cutoff+" "+averageCutoff);
-
+      int cutoff = minIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.95)); // We know the error will be in the last 30% (at most)
+      if(nextSolution.set.problemType <= 1) {
+        // According to the spec, there are no noise molecules in these problem types.
+        cutoff = rankDt.size();
+      } else {
+        System.out.println("Cut off "+cutoff);
+      }
+      //System.out.println("Cut off "+cutoff);
+      
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
         nextSolution.isTarget[i] = false;
       }
       for (int i = 0; i < set.size(); i++) {
         RankedOpSample s = rankedSamples.get(i);
-        if (i < averageCutoff) {
+        if (i < cutoff) {
           nextSolution.isTarget[s.sampleIndex] = true;
           nextSolution.isFlipped[s.sampleIndex] = s.flipped;
         }
@@ -134,21 +134,25 @@ public class OpticalMapSolver implements ISolutionFinder {
       solution = nextSolution;
     }
 
+    if(solution.set.problemType > 0){
+      // Don't merge close cuts for the trivial problem type
+      solution = purgeCloseCuts(solution, 0.009);
+    }
+    //solution = localSearchSolution(solution);
     
-    solution = localSearchSolution(solution);
     viewer.update(solution);
     
     return solution;
   }
   
   // Implement Local search here to find the best scoring ideal target
-  /*private OpSolution localSearchSolution(OpSolution guess) {
+  private OpSolution localSearchSolution(OpSolution guess) {
 
     // TODO: Should probably clone the solution here
     OpSolution bestSolution = guess;
     OpSample bestTarget = bestSolution.ideal;
     CosineScorer scorer = new CosineScorer();
-    double nDist = 0.1;
+    double nDist = 0.05;
     double gain = 1.0;
     int gIter = 0;
     while (gain > 0.0) {
@@ -162,42 +166,11 @@ public class OpticalMapSolver implements ISolutionFinder {
         bestSolution.ideal = t;
         double nBest = scorer.score(bestSolution);
         if (nBest > best) {
+          // Consider a shortcut here - if this is an improvement, short circuit
           gain = nBest - best;
           best = nBest;
           bestTarget = t;
-        }
-      }
-      System.out.println("Best: " + best + " gain: " + gain);
-    }
-    System.out.println("Optimize over " + gIter + " iterations");
-    bestSolution.ideal = bestTarget;
-    return bestSolution;
-  }*/
-  
-  private OpSolution localSearchSolution(OpSolution solution) {
-
-    // TODO: Should probably clone the solution here
-    OpSolution bestSolution = solution;
-    OpSample bestTarget = bestSolution.ideal;
-    CosineScorer scorer = new CosineScorer();
-    double score = scorer.score(bestSolution);
-    double best = score;
-    double nDist = 0.01;
-    double gain = 1.0;
-    int gIter = 0;
-    while(gain > 0.0){
-      gain = 0.0;
-      gIter++;
-      solution.ideal = bestTarget;
-      best = scorer.score(solution);
-      SampleNeighborhood neighborhood = new SampleNeighborhood(bestTarget);
-      for(OpSample t : neighborhood.genNeighbors(nDist)){
-        solution.ideal = t;
-        score = scorer.score(solution);
-        if(score > best){
-          gain = score - best;
-          best = score;
-          bestTarget = t;
+//          break;
         }
       }
       System.out.println("Best: " + best + " gain: " + gain);
@@ -207,11 +180,45 @@ public class OpticalMapSolver implements ISolutionFinder {
     return bestSolution;
   }
 
+  // Remove cuts that are really too close to each other
+  private OpSolution purgeCloseCuts(OpSolution guess, double eps) {
+
+    OpSample target = guess.ideal;
+    List<Double> newCuts = new ArrayList<Double>(target.size());
+    double last = -1;
+    for(Double c : target){
+      if(c - last < eps){
+        // suppress this point by averaging the two
+        newCuts.add((c + last)/ 2.0);
+        last = -1;
+      } else {
+        if(last >= 0){
+          newCuts.add(last);
+        }
+        last = c;
+      }
+    }
+    if(last >= 0){
+      newCuts.add(last);
+    }
+
+    System.out.println("Reduced cut points " + (target.size() - newCuts.size()));
+    
+    guess.ideal = new OpSample(newCuts);
+    return guess;
+  }
+  
+  // Remove cuts that aren't supported by the data
+  private OpSolution purgeUnSupportedCuts(OpSolution guess) {
+
+    return guess;
+  }
+
   private static List<Double> dt(List<Double> points) {
     int window = 1;
     List<Double> derivatives = new ArrayList<Double>();
     for (int i = 0; i < points.size(); i++) {
-      if (i != (points.size() - 1)) { // Make sure to return a vector of the same length
+      if (i < (points.size() - window)) { // Make sure to return a vector of the same length
         double d = (points.get(i+window) - points.get(i));
         derivatives.add(d);
       }
@@ -223,10 +230,10 @@ public class OpticalMapSolver implements ISolutionFinder {
     return derivatives;
   }
 
-  private static int maxIndex(List<Double> points) {
-    double max = points.get(0);
-    int maxIndex = 0;
-    for (int i = 0; i < points.size(); i++) {
+  private static int maxIndex(List<Double> points, int start, int end) {
+    double max = points.get(end);
+    int maxIndex = end;
+    for (int i = start; i < points.size() && i < end; i++) {
       if ((points.get(i)) > max && (points.get(i) != 0)) {
         maxIndex = i;
         max = points.get(i);
@@ -235,16 +242,15 @@ public class OpticalMapSolver implements ISolutionFinder {
     return maxIndex;
   }
   
-  private static int minIndex(List<Double> points) {
-    double min = points.get(0);
-    int minIndex = 0;
-    for (int i = 0; i < points.size(); i++) {
+  private static int minIndex(List<Double> points, int start, int end) {
+    double min = points.get(end);
+    int minIndex = end;
+    for (int i = start; i < points.size() && i < end; i++) {
       if ((points.get(i)) < min) {
         minIndex = i;
         min = points.get(i);
       }
     }
-    //System.out.println("MIN "+min);
     return minIndex;
   }
 
