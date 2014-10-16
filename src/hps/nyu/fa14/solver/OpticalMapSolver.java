@@ -51,7 +51,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     OpSolution solution = solution0;
     viewer.update(solution);
 
-    int iterations = 25;
+    int iterations = 10;
     for (int j = 0; j < iterations; j++) {
       counter = new BinCounter(solution);
       int targetCount = (int) (j + 1) * TARGET_BIN_COUNT / iterations;
