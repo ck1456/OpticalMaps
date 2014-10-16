@@ -77,11 +77,15 @@ public class OpSample implements Iterable<Double> {
 			otherPoints.add(d);
 		}
 		// Do this with paired cut points instead
-		//		List<Double> alignedCutPoints = getAlignedCutPoints(otherPoints);
+		//List<Double> alignedCutPoints = getAlignedCutPoints(otherPoints);
 		List<Double> alignedCutPoints = getPairedCutPoints(otherPoints);
 		double cosine = dot(alignedCutPoints, otherPoints)
 				/ (getVectorLength(alignedCutPoints) * getVectorLength(otherPoints));
-		//System.out.println("Cosine: "+cosine);
+		//sum of all min distances
+		/*double cosine = 0.0;
+		for(double d:alignedCutPoints) {
+		  cosine += d;
+		}*/
 		return cosine;
 	}
 
@@ -128,7 +132,7 @@ public class OpSample implements Iterable<Double> {
 			int minJ = -1;
 			for (int i = 0; i < thisCuts.size(); i++) {
 				for (int j = 0; j < otherPoints.size(); j++) {
-					if ((!pairedThis.contains(i) || pairedOther.contains(j))) {
+					if ((!pairedThis.contains(i) || !pairedOther.contains(j))) {
 						if (dist[i][j] < minDist) {
 							minDist = dist[i][j];
 							minI = i;
@@ -141,6 +145,7 @@ public class OpSample implements Iterable<Double> {
 			pairedThis.add(minI);
 			pairedOther.add(minJ);
 		}
+		//if we sort here, the cut points won't match right?
 		Collections.sort(pairedCutPoints);
 		
 		return pairedCutPoints;

@@ -45,5 +45,24 @@ public class SampleNeighborhood {
 		}
 		return neighbors;
 	}
+	
+	public List<OpSample> generateNeighbors(double dist) {
+
+    List<Double> tCuts = new ArrayList<Double>();
+    for (Double d : target) {
+      tCuts.add(d);
+    }
+
+    List<OpSample> neighbors = new ArrayList<OpSample>();
+    List<Double> newCuts1 = new ArrayList<Double>();
+    List<Double> newCuts2 = new ArrayList<Double>();
+    for (int i = 0; i < target.size(); i++) {
+      newCuts1.add(Math.max(tCuts.get(i) - dist, 0.0));
+      newCuts2.add(Math.min(tCuts.get(1) + dist, 1.0));
+    }
+    neighbors.add(new OpSample(newCuts1));
+    neighbors.add(new OpSample(newCuts2));
+    return neighbors;
+  }
 
 }
