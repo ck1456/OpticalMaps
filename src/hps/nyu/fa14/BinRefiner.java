@@ -15,8 +15,6 @@ public class BinRefiner {
 		this.target = target;
 	}
 	
-	
-	
 	public OpSolution genSolution(SampleSet set){
 		OpSolution solution = new OpSolution(set);
 		solution.ideal = target;

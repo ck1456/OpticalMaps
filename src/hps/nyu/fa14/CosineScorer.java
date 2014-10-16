@@ -1,7 +1,6 @@
 package hps.nyu.fa14;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CosineScorer implements ISolutionScorer {
@@ -18,7 +17,6 @@ public class CosineScorer implements ISolutionScorer {
     // Track a list of all of the diffs between ideal and each target sample
     // in the correct orientation
     List<Double> targetCosines = new ArrayList<Double>();
-//    List<Double> noisePartialDiffs = new ArrayList<Double>();
     for (int i = 0; i < solution.set.size(); i++) {
       OpSample sample = solution.set.get(i);
       if (solution.isTarget[i]) {
@@ -26,8 +24,6 @@ public class CosineScorer implements ISolutionScorer {
         targetCosines.add(sample.cosine(ideal));
       }
     }
-    //Collections.sort(targetCosines);
-    //Collections.sort(noisePartialDiffs);
     double score = 1.0;
     for(int i=0;i<targetCosines.size();i++) {
       score *= targetCosines.get(i);

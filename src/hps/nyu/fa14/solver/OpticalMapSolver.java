@@ -105,14 +105,13 @@ public class OpticalMapSolver implements ISolutionFinder {
       
       //We need to find where the derivative of the slope is decreasing fastest
       //so we need dt(dt()) to be lowest
-      int cutoff = minIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.95)); // We know the error will be in the last 30% (at most)
+      int cutoff = maxIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.90)); // We know the error will be in the last 30% (at most)
       if(nextSolution.set.problemType <= 1) {
         // According to the spec, there are no noise molecules in these problem types.
         cutoff = rankDt.size();
       } else {
-        System.out.println("Cut off "+cutoff);
+        //System.out.println("Cut off "+cutoff);
       }
-      //System.out.println("Cut off "+cutoff);
       
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
@@ -138,6 +137,7 @@ public class OpticalMapSolver implements ISolutionFinder {
       // Don't merge close cuts for the trivial problem type
       solution = purgeCloseCuts(solution, 0.009);
     }
+    // Local search turns out to be really costly and not that effective
     //solution = localSearchSolution(solution);
     
     viewer.update(solution);
@@ -215,7 +215,7 @@ public class OpticalMapSolver implements ISolutionFinder {
   }
 
   private static List<Double> dt(List<Double> points) {
-    int window = 1;
+    int window = 5;
     List<Double> derivatives = new ArrayList<Double>();
     for (int i = 0; i < points.size(); i++) {
       if (i < (points.size() - window)) { // Make sure to return a vector of the same length

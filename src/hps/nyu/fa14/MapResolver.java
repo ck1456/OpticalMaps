@@ -1,6 +1,5 @@
 package hps.nyu.fa14;
 
-import hps.nyu.fa14.solver.CutClusterSolver;
 import hps.nyu.fa14.solver.OpticalMapSolver;
 
 import java.io.File;
@@ -20,18 +19,17 @@ public class MapResolver implements Runnable {
 	public ISolutionViewer viewer;
 	
 	public OpSolution resolve(){
-		long start = System.currentTimeMillis();
+		//long start = System.currentTimeMillis();
 		if(viewer == null){
 			viewer = new NullSolutionViewer();
 		}
-		// TODO: This needs to be implemented better
 		// Instantiate whatever type of solver you want here
 		// ISolutionFinder solver = new RandomSolver();
 		ISolutionFinder solver = new OpticalMapSolver(viewer);
 		
 		// Generate and return an OpSolution
 		OpSolution solution = solver.generateSolution(set);
-		System.out.println("Time to solve: " + ((System.currentTimeMillis() - start) / 1000));
+		//System.out.println("Time to solve: " + ((System.currentTimeMillis() - start) / 1000));
 		return solution;
 	}
 	

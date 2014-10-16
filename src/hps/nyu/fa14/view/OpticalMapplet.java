@@ -1,6 +1,5 @@
 package hps.nyu.fa14.view;
 
-import hps.nyu.fa14.CoherenceScorer;
 import hps.nyu.fa14.CosineScorer;
 import hps.nyu.fa14.ISolutionViewer;
 import hps.nyu.fa14.MapResolver;
@@ -60,7 +59,7 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 
 	public OpticalMapplet() throws Exception {
 		SampleSet set = SampleSet.parse(new FileInputStream(new File(
-				"../data/test_problem_2_num_1.txt")));
+				"../data/test_problem_2_num_0.txt")));
 
 		MapResolver resolver = new MapResolver(set);
 		resolver.viewer = this;
@@ -87,27 +86,10 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		}
 		y+=9;
 		
-		// render the target samples
-//		for (int i = 0; i < sol.set.size(); i++) {
+		// render the target samples (normal and flipped)
 		for (int i : sol.rankedOrder) {
-			if (sol.isTarget[i] && !sol.isFlipped[i]) {
-				g.setColor(Color.green);
-
-				y += 2;
-				OpSample s = sol.set.get(i);
-				s.flip(sol.isFlipped[i]);
-				for (Double c : s) {
-					int x = (int) (c * width);
-					g.drawLine(x, y, x, y + 1);
-				}
-			}
-		//}
-		
-		//for (int i = 0; i < sol.set.size(); i++) {
-		//for (int i : sol.rankedOrder) {
-			if (sol.isTarget[i] && sol.isFlipped[i]) {
-				g.setColor(Color.yellow);
-
+			if (sol.isTarget[i]) {
+				g.setColor(sol.isFlipped[i] ? Color.yellow : Color.green);
 				y += 2;
 				OpSample s = sol.set.get(i);
 				s.flip(sol.isFlipped[i]);
@@ -119,7 +101,6 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		}
 
 		// render noise
-//		for (int i = 0; i < sol.set.size(); i++) {
 		for (int i : sol.rankedOrder) {
 			if (!sol.isTarget[i]) {
 
@@ -133,8 +114,6 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 			}
 		}
 
-		// TODO: Figure out how to sort the molecules in order of correlation
-		
 		// Draw a white flip line down the middle
 		g.setColor(Color.white);
 		int x = (int) (0.5 * width);
@@ -148,5 +127,4 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		double score = scorer.score(newSolution);
 		System.out.println("Score: " + score);
 	}
-
 }

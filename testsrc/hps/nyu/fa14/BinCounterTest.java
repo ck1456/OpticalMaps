@@ -37,7 +37,7 @@ public class BinCounterTest {
 		
 		int[] topBins = BinCounter.getPercentTopBins(bins, .1);
 		
-		assertEquals(471, topBins[0]);
+		assertEquals(963, topBins[0]);
 		
 		OpSample newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
 		

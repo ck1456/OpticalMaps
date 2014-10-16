@@ -24,9 +24,10 @@
 	<target name="package" depends="createjar">
 		<echo>Zipping...</echo>
 		<zip destfile="dist/${zip.name}.zip">
-			<zipfileset dir="." includes="index.html" prefix="${zip.name}" />
-			<zipfileset dir="src" includes="*.java" prefix="${zip.name}" excludes="test*.java" />
-			<zipfileset dir="bin" includes="*.class" prefix="${zip.name}" excludes="test*.class" />
+			<zipfileset dir="." includes="MapResolver.jar" prefix="${zip.name}" />
+			<zipfileset dir="." includes="build.xml" prefix="${zip.name}" />
+			<zipfileset dir="src" includes="**/*.java" prefix="${zip.name}/src" />
+			<zipfileset dir="testsrc" includes="**/*.java" prefix="${zip.name}/src" />
 		</zip>
 	</target>
 

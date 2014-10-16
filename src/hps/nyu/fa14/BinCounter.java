@@ -62,7 +62,6 @@ public class BinCounter {
 	 */
 	public static int[] getTopBins(int[] bins, int binCount, int collapseBins){
 		int[] topBins = new int[binCount];
-		//System.out.println("BIN COUNT "+binCount);
 		List<Integer> sortedBins = new ArrayList<Integer>();
 		Map<Integer, List<Integer>> binCountMap = new HashMap<Integer, List<Integer>>();
 		for(int i = 0; i < bins.length; ++i){
@@ -79,7 +78,6 @@ public class BinCounter {
 		int i = 0;
 		int j = 0;
 		while(i < binCount && j < sortedBins.size()){
-//		for(int i = 0; i < binCount; i++){
 			int binValue = sortedBins.get(j++);
 			int binIndex = binCountMap.get(binValue).remove(0);
 			if(!countedBins.contains(binIndex)){
@@ -102,8 +100,8 @@ public class BinCounter {
 	// TODO: Implement a 2-means clustering algorithm to determine how many bins to return
 	public static int[] getPercentTopBins(int[] bins){
 		throw new  UnsupportedOperationException("Not Implemented");
-		
 	}
+	
 	public static String binString(int[] bins){
 		StringBuilder sb = new StringBuilder();
 		
@@ -112,5 +110,4 @@ public class BinCounter {
 		}
 		return sb.toString();
 	}
-
 }

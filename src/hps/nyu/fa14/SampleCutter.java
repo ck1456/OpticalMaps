@@ -15,8 +15,8 @@ public class SampleCutter {
 	// Epsilon jiggle
 	private static final double eps = 0.05;
 	
-	// Garbage
-	private static final double pG = 0.25;
+	// Garbage - not implemented
+	//private static final double pG = 0.25;
 
 	public static SampleSet generate(int cuts, int samples){
 		
