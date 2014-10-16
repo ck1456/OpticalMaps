@@ -208,6 +208,26 @@ public class OpticalMapSolver implements ISolutionFinder {
     return guess;
   }
   
+  private double getCutPointToRemove(double c,double n,SampleSet set) {
+    List<Double> cList = new ArrayList<Double>();
+    cList.add(c);
+    List<Double> nList = new ArrayList<Double>();
+    cList.add(n);
+    double totalC = 0.0;
+    double totalN = 0.0;
+    for (int i = 0; i < set.size(); i++) {
+      OpSample s = set.get(i);
+      OpSample other = new OpSample(cList);
+      totalC += s.diff(other);
+      other = new OpSample(nList);
+      totalN += s.diff(other);
+    }
+    if(totalC <= totalN)
+      return c;
+    else
+      return n;
+  }
+  
   // Remove cuts that aren't supported by the data
   private OpSolution purgeUnSupportedCuts(OpSolution guess) {
 
