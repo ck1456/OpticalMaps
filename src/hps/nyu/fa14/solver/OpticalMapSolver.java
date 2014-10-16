@@ -51,6 +51,8 @@ public class OpticalMapSolver implements ISolutionFinder {
     OpSolution solution = solution0;
     viewer.update(solution);
 
+    int totalCutoff = 0;
+    int averageCutoff = 0;
     int iterations = 10;
     for (int j = 0; j < iterations; j++) {
       counter = new BinCounter(solution);
@@ -108,7 +110,9 @@ public class OpticalMapSolver implements ISolutionFinder {
       //We need to find where the derivative of the slope is decreasing fastest
       //so we need dt(dt()) to be lowest
       int cutoff = minIndex(rankDt);
-      System.out.println("Cut off "+cutoff);
+      totalCutoff += cutoff;
+      averageCutoff = (int) (totalCutoff / (j+1));
+      System.out.println("Cut off "+cutoff+" "+averageCutoff);
 
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
@@ -116,7 +120,7 @@ public class OpticalMapSolver implements ISolutionFinder {
       }
       for (int i = 0; i < set.size(); i++) {
         RankedOpSample s = rankedSamples.get(i);
-        if (i < cutoff) {
+        if (i < averageCutoff) {
           nextSolution.isTarget[s.sampleIndex] = true;
           nextSolution.isFlipped[s.sampleIndex] = s.flipped;
         }
