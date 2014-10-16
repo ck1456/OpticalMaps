@@ -60,7 +60,7 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 
 	public OpticalMapplet() throws Exception {
 		SampleSet set = SampleSet.parse(new FileInputStream(new File(
-				"../data/test_problem_2_num_0.txt")));
+				"../data/test_problem_3_num_1.txt")));
 
 		MapResolver resolver = new MapResolver(set);
 		resolver.viewer = this;
@@ -83,9 +83,9 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		g.setColor(Color.cyan);
 		for (Double c : sol.ideal) {
 			int x = (int) (c * width);
-			g.drawLine(x, y, x, y + 4);
+			g.drawLine(x, y, x, y + 8);
 		}
-		y+=5;
+		y+=9;
 		
 		// render the target samples
 		for (int i = 0; i < sol.set.size(); i++) {

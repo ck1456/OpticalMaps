@@ -20,6 +20,7 @@ public class MapResolver implements Runnable {
 	public ISolutionViewer viewer;
 	
 	public OpSolution resolve(){
+		long start = System.currentTimeMillis();
 		if(viewer == null){
 			viewer = new NullSolutionViewer();
 		}
@@ -30,6 +31,7 @@ public class MapResolver implements Runnable {
 		
 		// Generate and return an OpSolution
 		OpSolution solution = solver.generateSolution(set);
+		System.out.println("Time to solve: " + ((System.currentTimeMillis() - start) / 1000));
 		return solution;
 	}
 	

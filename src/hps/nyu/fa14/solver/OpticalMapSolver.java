@@ -18,7 +18,7 @@ import hps.nyu.fa14.SampleSet;
 public class OpticalMapSolver implements ISolutionFinder {
 
   private final int BIN_COUNT = 1000;
-  private final int COLLAPSE_BIN_COUNT = 1;
+  private final int COLLAPSE_BIN_COUNT = 15;
   private final int TARGET_BIN_COUNT = 40;
 
   private final ISolutionViewer viewer;
@@ -39,7 +39,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     int[] topBins = BinCounter.getPercentTopBins(counter.count(BIN_COUNT),
         .005, COLLAPSE_BIN_COUNT);
     OpSample newBinned = BinCounter.newSampleFromBins(BIN_COUNT, topBins);
-    System.out.println("size of bins " + newBinned.size());
+    //System.out.println("size of bins " + newBinned.size());
 
     // Refine the solution based on finding the samples that are most
     // similar to the small target
@@ -95,7 +95,7 @@ public class OpticalMapSolver implements ISolutionFinder {
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
       int cutoff = maxIndex(rankDt);
-      System.out.println("Cut off "+cutoff);
+      //System.out.println("Cut off "+cutoff);
 
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
@@ -117,8 +117,9 @@ public class OpticalMapSolver implements ISolutionFinder {
       solution = nextSolution;
     }
 
+    solution = purgeCloseCuts(solution, 0.009);
+    //solution = localSearchSolution(solution);
     
-    solution = localSearchSolution(solution);
     viewer.update(solution);
     
     return solution;
@@ -131,7 +132,7 @@ public class OpticalMapSolver implements ISolutionFinder {
 		OpSolution bestSolution = guess;
 		OpSample bestTarget = bestSolution.ideal;
 		CosineScorer scorer = new CosineScorer();
-		double nDist = 0.1;
+		double nDist = 0.05;
 		double gain = 1.0;
 		int gIter = 0;
 		while (gain > 0.0) {
@@ -145,9 +146,11 @@ public class OpticalMapSolver implements ISolutionFinder {
 				bestSolution.ideal = t;
 				double nBest = scorer.score(bestSolution);
 				if (nBest > best) {
+					// Consider a shortcut here - if this is an improvement, short circuit
 					gain = nBest - best;
 					best = nBest;
 					bestTarget = t;
+//					break;
 				}
 			}
 			System.out.println("Best: " + best + " gain: " + gain);
@@ -157,11 +160,45 @@ public class OpticalMapSolver implements ISolutionFinder {
 		return bestSolution;
 	}
 
+	// Remove cuts that are really too close to each other
+	private OpSolution purgeCloseCuts(OpSolution guess, double eps) {
+
+		OpSample target = guess.ideal;
+		List<Double> newCuts = new ArrayList<Double>(target.size());
+		double last = -1;
+		for(Double c : target){
+			if(c - last < eps){
+				// suppress this point by averaging the two
+				newCuts.add((c + last)/ 2.0);
+				last = -1;
+			} else {
+				if(last >= 0){
+					newCuts.add(last);
+				}
+				last = c;
+			}
+		}
+		if(last >= 0){
+			newCuts.add(last);
+		}
+
+		System.out.println("Reduced cut points " + (target.size() - newCuts.size()));
+		
+		guess.ideal = new OpSample(newCuts);
+		return guess;
+	}
+	
+	// Remove cuts that aren't supported by the data
+	private OpSolution purgeUnSupportedCuts(OpSolution guess) {
+
+		return guess;
+	}
+
   private static List<Double> dt(List<Double> points) {
-    int window = 1;
+    int window = 2;
     List<Double> derivatives = new ArrayList<Double>();
     for (int i = 0; i < points.size(); i++) {
-      if (i != (points.size() - 1)) { // Make sure to return a vector of the same length
+      if (i < (points.size() - window)) { // Make sure to return a vector of the same length
         double d = (points.get(i+window) - points.get(i));
         derivatives.add(d);
       }

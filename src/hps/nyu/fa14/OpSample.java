@@ -12,10 +12,12 @@ public class OpSample implements Iterable<Double> {
 	/**
 	 * A sorted list of the cuts in one sample
 	 */
-	private final List<Double> cuts = new ArrayList<Double>();
-	private final List<Double> cutsFlipped = new ArrayList<Double>();
+	private final List<Double> cuts;
+	private final List<Double> cutsFlipped;
 	
 	public OpSample(List<Double> cuts){
+		this.cuts = new ArrayList<Double>(cuts.size());
+		cutsFlipped = new ArrayList<Double>(cuts.size());
 		for(Double c : cuts){
 			this.cuts.add(c);
 			this.cutsFlipped.add(1.0 - c);
@@ -39,7 +41,7 @@ public class OpSample implements Iterable<Double> {
 		// For each cut in the other, find the closest cut in this sample, and accumulate the
 		// absolute value of difference in points
 		double diff = 0.0;
-		List<Double> otherPoints = new ArrayList<Double>();
+		List<Double> otherPoints = new ArrayList<Double>(other.size());
 		for(Double d : other){ // takes into account whether it is flipped
 			otherPoints.add(d);
 		}
@@ -61,7 +63,7 @@ public class OpSample implements Iterable<Double> {
 	
 	
 	public double cosine(OpSample other) {
-		return cosine(other, 0.7); // a default digestion rate
+		return cosine(other, 0.6); // a default digestion rate
 	}
 	
 	/**
