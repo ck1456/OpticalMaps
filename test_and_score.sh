@@ -1,4 +1,4 @@
-#!bash
+#!/bin/bash
 
 datadir="data/"
 solndir="soln/"
