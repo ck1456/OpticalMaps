@@ -83,9 +83,9 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		g.setColor(Color.cyan);
 		for (Double c : sol.ideal) {
 			int x = (int) (c * width);
-			g.drawLine(x, y, x, y + 4);
+			g.drawLine(x, y, x, y + 8);
 		}
-		y+=5;
+		y+=9;
 		
 		// render the target samples
 		for (int i = 0; i < sol.set.size(); i++) {
