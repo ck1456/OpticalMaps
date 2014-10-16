@@ -30,7 +30,11 @@
 		<zip destfile="${dist.dir}/${zip.name}.zip">
 			<zipfileset dir="." includes="MapResolver.jar" prefix="${zip.name}" />
 			<zipfileset dir="." includes="build.xml" prefix="${zip.name}" />
+			<zipfileset dir="." includes="test_and_score*.sh" prefix="${zip.name}" />
+			<zipfileset dir="." includes="README" prefix="${zip.name}" />
 			<zipfileset dir="src" includes="**/*.java" prefix="${zip.name}/src" />
+			<zipfileset dir="data" includes="*.txt" prefix="${zip.name}/data" />
+			<zipfileset dir="spec" includes="*.jar" prefix="${zip.name}/spec" />
 			<!--<zipfileset dir="testsrc" includes="**/*.java" prefix="${zip.name}/testsrc" />-->
 		</zip>
 	</target>

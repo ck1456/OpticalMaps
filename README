@@ -1,10 +1,39 @@
-To run the visualizer, change the name of the input file in OpticalMapplet.java, and run the applet
-Green points represent cuts on samples which are considered good, and not flipped. Yellow points represent cuts on samples which are considered good, but flipped. Red points represent cuts on samples which are considered noise.
+Optical Map Challenge
+Heuristic Problem Solving - Fall 2014
+
+Submitted by:  DataPlayers
+  Chris Keitel (ck1456@nyu.edu)
+  Kumar Prabhu (kumar.prabhu@nyu.edu)
+
+The attached zip file contains all of the source and compiled code to produce solutions
+
+Copy the zip file to an energon machine and unzip:
+> unzip MapResolver.zip
+> cd MapResolver
+
+The MapResolver.jar in this directory is the tool used to generate solutions.
+You can invoke it with two command line arguments <input> <output>:
+> java -jar MapResolver.jar test_problem_0_num_0.txt test_problem_0_num_0_soln.txt
+
+If necessary you can rebuild the jar file by using the included ant build script:
+> ant clean
+> ant
+
+Other Helpful Hints:
+We also provided a visualizer that helped us determine appropriate solutions. To run
+the visualizer, change the name of the input file in OpticalMapplet.java, and run the applet
+Green points represent cuts on samples which are considered good, and not flipped. Yellow
+points represent cuts on samples which are considered good, but flipped.
+Red points represent cuts on samples which are considered noise.
+
+We supplied all of the test data along with this submission.  Assuming these files are
+in data/ there are two helper scripts which can be used to generate solutions efficiently.
 
 To generate a solution for the dataset test_problem_<p>_num_<n>.txt use the script test_and_score.sh as follows:
-               bash test_and_score.sh p n 
-The solution file is generated under the soln/ directory
+> ./test_and_score.sh <p> <n>
 
-To run all tests (the ones given in the initial dataset), use test_and_score.sh
-as:
-               bash test_and_score_all.sh 
+The solution file is generated under the soln/ directory.
+**Note: the scoring component the grading jar to be located in spec/
+
+To run all tests (the ones given in the initial dataset), use test_and_score_all.sh:
+> ./test_and_score_all.sh

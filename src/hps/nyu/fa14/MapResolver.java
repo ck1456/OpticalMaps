@@ -48,7 +48,10 @@ public class MapResolver implements Runnable {
 		MapResolver resolver = new MapResolver(inputSet);
 		OpSolution solution = resolver.resolve();
 		
-		solution.write(new FileOutputStream(new File(outputFile)));
+		// Make directory for the output file if it does not exist
+		File outFile = new File(outputFile);
+		outFile.getParentFile().mkdirs();
+		solution.write(new FileOutputStream(outFile));
 	}
 
 	private static void usage() {
