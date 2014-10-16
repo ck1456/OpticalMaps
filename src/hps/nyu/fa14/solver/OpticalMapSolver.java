@@ -51,7 +51,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     OpSolution solution = solution0;
     viewer.update(solution);
 
-    int iterations = 10;
+    int iterations = 25;
     for (int j = 0; j < iterations; j++) {
       counter = new BinCounter(solution);
       int targetCount = (int) (j + 1) * TARGET_BIN_COUNT / iterations;
@@ -74,6 +74,14 @@ public class OpticalMapSolver implements ISolutionFinder {
         RankedOpSample ranked = new RankedOpSample();
         ranked.sample = s;
         ranked.sampleIndex = i;
+        
+        /*if (diff <= flipDiff) {
+          ranked.diff = diff;
+        } else {
+          ranked.flipped = true;
+          ranked.diff = flipDiff;
+        }*/
+        
         if (diff < flipDiff) {
           ranked.diff = flipDiff;
           ranked.flipped = true;
@@ -94,7 +102,12 @@ public class OpticalMapSolver implements ISolutionFinder {
       }
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
-      int cutoff = maxIndex(rankDt);
+      //int cutoff = maxIndex(rankDt);
+      //System.out.println("Cut off "+cutoff);
+      
+      //We need to find where the derivative of the slope is decreasing fastest
+      //so we need dt(dt()) to be lowest
+      int cutoff = minIndex(rankDt);
       System.out.println("Cut off "+cutoff);
 
       // choose the top x percent, then mark the others garbage
@@ -125,7 +138,7 @@ public class OpticalMapSolver implements ISolutionFinder {
   }
   
   // Implement Local search here to find the best scoring ideal target
-  private OpSolution localSearchSolution(OpSolution guess) {
+  /*private OpSolution localSearchSolution(OpSolution guess) {
 
     // TODO: Should probably clone the solution here
     OpSolution bestSolution = guess;
@@ -147,6 +160,39 @@ public class OpticalMapSolver implements ISolutionFinder {
         if (nBest > best) {
           gain = nBest - best;
           best = nBest;
+          bestTarget = t;
+        }
+      }
+      System.out.println("Best: " + best + " gain: " + gain);
+    }
+    System.out.println("Optimize over " + gIter + " iterations");
+    bestSolution.ideal = bestTarget;
+    return bestSolution;
+  }*/
+  
+  private OpSolution localSearchSolution(OpSolution solution) {
+
+    // TODO: Should probably clone the solution here
+    OpSolution bestSolution = solution;
+    OpSample bestTarget = bestSolution.ideal;
+    CosineScorer scorer = new CosineScorer();
+    double score = scorer.score(bestSolution);
+    double best = score;
+    double nDist = 0.01;
+    double gain = 1.0;
+    int gIter = 0;
+    while(gain > 0.0){
+      gain = 0.0;
+      gIter++;
+      solution.ideal = bestTarget;
+      best = scorer.score(solution);
+      SampleNeighborhood neighborhood = new SampleNeighborhood(bestTarget);
+      for(OpSample t : neighborhood.genNeighbors(nDist)){
+        solution.ideal = t;
+        score = scorer.score(solution);
+        if(score > best){
+          gain = score - best;
+          best = score;
           bestTarget = t;
         }
       }
@@ -177,11 +223,25 @@ public class OpticalMapSolver implements ISolutionFinder {
     double max = points.get(0);
     int maxIndex = 0;
     for (int i = 0; i < points.size(); i++) {
-      if (points.get(i) > max) {
+      if ((points.get(i)) > max && (points.get(i) != 0)) {
         maxIndex = i;
+        max = points.get(i);
       }
     }
     return maxIndex;
+  }
+  
+  private static int minIndex(List<Double> points) {
+    double min = points.get(0);
+    int minIndex = 0;
+    for (int i = 0; i < points.size(); i++) {
+      if ((points.get(i)) < min) {
+        minIndex = i;
+        min = points.get(i);
+      }
+    }
+    //System.out.println("MIN "+min);
+    return minIndex;
   }
 
   private static class RankedOpSample {
