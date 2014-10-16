@@ -139,6 +139,7 @@ public class OpticalMapSolver implements ISolutionFinder {
     }
 
     
+<<<<<<< HEAD
     // Implement Local search here to find the best scoring ideal target
     /*OpSolution bestSolution = solution;
     OpSample bestTarget = bestSolution.ideal;
@@ -194,9 +195,46 @@ public class OpticalMapSolver implements ISolutionFinder {
     }
     System.out.println("Optimize over " + gIter + " iterations");
     bestSolution.ideal = bestTarget;
+=======
+    solution = localSearchSolution(solution);
+    viewer.update(solution);
+>>>>>>> 2a96418d655ebb3dc250dbaab5518dfe1e773b96
     
     return solution;
   }
+  
+	// Implement Local search here to find the best scoring ideal target
+	private OpSolution localSearchSolution(OpSolution guess) {
+
+		// TODO: Should probably clone the solution here
+		OpSolution bestSolution = guess;
+		OpSample bestTarget = bestSolution.ideal;
+		CosineScorer scorer = new CosineScorer();
+		double nDist = 0.1;
+		double gain = 1.0;
+		int gIter = 0;
+		while (gain > 0.0) {
+			gain = 0.0;
+			gIter++;
+			bestSolution.ideal = bestTarget;
+			double best = scorer.score(bestSolution);
+			SampleNeighborhood neighborhood = new SampleNeighborhood(bestTarget);
+			// double bestNeighbor = 0.0;
+			for (OpSample t : neighborhood.genNeighbors(nDist)) {
+				bestSolution.ideal = t;
+				double nBest = scorer.score(bestSolution);
+				if (nBest > best) {
+					gain = nBest - best;
+					best = nBest;
+					bestTarget = t;
+				}
+			}
+			System.out.println("Best: " + best + " gain: " + gain);
+		}
+		System.out.println("Optimize over " + gIter + " iterations");
+		bestSolution.ideal = bestTarget;
+		return bestSolution;
+	}
 
   private static List<Double> dt(List<Double> points) {
     int window = 1;

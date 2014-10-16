@@ -59,6 +59,11 @@ public class OpSample implements Iterable<Double> {
 		return diff;
 	}
 	
+	
+	public double cosine(OpSample other) {
+		return cosine(other, 0.7); // a default digestion rate
+	}
+	
 	/**
 	 * Calculates the absolute differences between the closest points in this
 	 * and the other In general, the difference is not symmetric It is possible
@@ -67,7 +72,7 @@ public class OpSample implements Iterable<Double> {
 	 * @param other
 	 * @return
 	 */
-	public double cosine(OpSample other) {
+	public double cosine(OpSample other, double digestionRate) {
 		// For each cut in the other, find the closest cut in this sample, and
 		// accumulate the
 		// absolute value of difference in points
@@ -77,6 +82,7 @@ public class OpSample implements Iterable<Double> {
 			otherPoints.add(d);
 		}
 		// Do this with paired cut points instead
+<<<<<<< HEAD
 		//List<Double> alignedCutPoints = getAlignedCutPoints(otherPoints);
 		List<Double> alignedCutPoints = getPairedCutPoints(otherPoints);
 		double cosine = dot(alignedCutPoints, otherPoints)
@@ -86,6 +92,13 @@ public class OpSample implements Iterable<Double> {
 		for(double d:alignedCutPoints) {
 		  cosine += d;
 		}*/
+=======
+		//		List<Double> alignedCutPoints = getAlignedCutPoints(otherPoints);
+		List<List<Double>> alignedCutPoints = getPairedCutPoints(otherPoints, digestionRate);
+		double cosine = dot(alignedCutPoints.get(0), alignedCutPoints.get(1))
+				/ (getVectorLength(alignedCutPoints.get(0)) * getVectorLength(alignedCutPoints.get(1)));
+		//System.out.println("Cosine: "+cosine);
+>>>>>>> 2a96418d655ebb3dc250dbaab5518dfe1e773b96
 		return cosine;
 	}
 
@@ -112,8 +125,15 @@ public class OpSample implements Iterable<Double> {
 	}
 
 	//TODO: Can add partial digestion parameter here
-	private List<Double> getPairedCutPoints(List<Double> otherPoints) {
-		List<Double> pairedCutPoints = new ArrayList<Double>();
+	/**
+	 * I think this should be symmetric...
+	 * @param otherPoints
+	 * @param digestionRate
+	 * @return
+	 */
+	private List<List<Double>> getPairedCutPoints(List<Double> otherPoints, double digestionRate) {
+		List<Double> thisPairedCutPoints = new ArrayList<Double>();
+		List<Double> otherPairedCutPoints = new ArrayList<Double>();
 		List<Double> thisCuts = (flipped ? cutsFlipped : cuts);
 		
 		// Calculate all of the pairwise distances
@@ -124,15 +144,22 @@ public class OpSample implements Iterable<Double> {
 			}
 		}
 		
+		int valuesToCompare = (int)(Math.max(thisCuts.size(), otherPoints.size()) * digestionRate);
+		valuesToCompare = Math.min(valuesToCompare, Math.min(thisCuts.size(), otherPoints.size()));
+		
 		Set<Integer> pairedThis = new HashSet<Integer>();
 		Set<Integer> pairedOther = new HashSet<Integer>();
-		for (int k = 0; k < otherPoints.size(); k++) {
+		for (int k = 0; k < valuesToCompare; k++) {
 			double minDist = Double.MAX_VALUE;
 			int minI = -1;
 			int minJ = -1;
 			for (int i = 0; i < thisCuts.size(); i++) {
 				for (int j = 0; j < otherPoints.size(); j++) {
+<<<<<<< HEAD
 					if ((!pairedThis.contains(i) || !pairedOther.contains(j))) {
+=======
+					if (!(pairedThis.contains(i) || pairedOther.contains(j))) {
+>>>>>>> 2a96418d655ebb3dc250dbaab5518dfe1e773b96
 						if (dist[i][j] < minDist) {
 							minDist = dist[i][j];
 							minI = i;
@@ -141,14 +168,23 @@ public class OpSample implements Iterable<Double> {
 					}
 				}
 			}
-			pairedCutPoints.add(thisCuts.get(minI));
+			thisPairedCutPoints.add(thisCuts.get(minI));
+			otherPairedCutPoints.add(otherPoints.get(minJ));
 			pairedThis.add(minI);
 			pairedOther.add(minJ);
 		}
+<<<<<<< HEAD
 		//if we sort here, the cut points won't match right?
 		Collections.sort(pairedCutPoints);
+=======
+		Collections.sort(thisPairedCutPoints);
+		Collections.sort(otherPairedCutPoints);
+>>>>>>> 2a96418d655ebb3dc250dbaab5518dfe1e773b96
 		
-		return pairedCutPoints;
+		List<List<Double>> pairedVectors = new ArrayList<List<Double>>();
+		pairedVectors.add(thisPairedCutPoints);
+		pairedVectors.add(otherPairedCutPoints);
+		return pairedVectors;
 	}
 
 	private static double dot(List<Double> list1, List<Double> list2) {
