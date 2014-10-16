@@ -190,6 +190,14 @@ public class OpticalMapSolver implements ISolutionFinder {
       if(c - last < eps){
         // suppress this point by averaging the two
         newCuts.add((c + last)/ 2.0);
+        /*if(getCutPointToRemove(last, c, guess.set) == last) {
+          //remove last
+          newCuts.add(c);
+        }
+        else {
+          //remove c
+          newCuts.add(last);
+        }*/
         last = -1;
       } else {
         if(last >= 0){
@@ -206,6 +214,26 @@ public class OpticalMapSolver implements ISolutionFinder {
     
     guess.ideal = new OpSample(newCuts);
     return guess;
+  }
+  
+  private double getCutPointToRemove(double c,double n,SampleSet set) {
+    List<Double> cList = new ArrayList<Double>();
+    cList.add(c);
+    List<Double> nList = new ArrayList<Double>();
+    cList.add(n);
+    double totalC = 0.0;
+    double totalN = 0.0;
+    for (int i = 0; i < set.size(); i++) {
+      OpSample s = set.get(i);
+      OpSample other = new OpSample(cList);
+      totalC += s.diff(other);
+      other = new OpSample(nList);
+      totalN += s.diff(other);
+    }
+    if(totalC <= totalN)
+      return c;
+    else
+      return n;
   }
   
   // Remove cuts that aren't supported by the data

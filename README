@@ -1,0 +1,10 @@
+To run the visualizer, change the name of the input file in OpticalMapplet.java, and run the applet
+Green points represent cuts on samples which are considered good, and not flipped. Yellow points represent cuts on samples which are considered good, but flipped. Red points represent cuts on samples which are considered noise.
+
+To generate a solution for the dataset test_problem_<p>_num_<n>.txt use the script test_and_score.sh as follows:
+               bash test_and_score.sh p n 
+The solution file is generated under the soln/ directory
+
+To run all tests (the ones given in the initial dataset), use test_and_score.sh
+as:
+               bash test_and_score_all.sh 
