@@ -102,13 +102,18 @@ public class OpticalMapSolver implements ISolutionFinder {
       String data = sb.toString();
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
-      int cutoff = maxIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.95)); // We know the error will be in the last 30% (at most)
+      
+      //We need to find where the derivative of the slope is decreasing fastest
+      //so we need dt(dt()) to be lowest
+      int cutoff = minIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.95)); // We know the error will be in the last 30% (at most)
       if(nextSolution.set.problemType <= 1) {
     	  // According to the spec, there are no noise molecules in these problem types.
     	  cutoff = rankDt.size();
+      } else {
+    	  System.out.println("Cut off "+cutoff);
       }
-//      System.out.println("Cut off "+cutoff);
-
+      //System.out.println("Cut off "+cutoff);
+      
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
         nextSolution.isTarget[i] = false;
@@ -129,7 +134,10 @@ public class OpticalMapSolver implements ISolutionFinder {
       solution = nextSolution;
     }
 
-    solution = purgeCloseCuts(solution, 0.009);
+    if(solution.set.problemType > 0){
+    	// Don't merge close cuts for the trivial problem type
+    	solution = purgeCloseCuts(solution, 0.009);
+    }
     //solution = localSearchSolution(solution);
     
     viewer.update(solution);
@@ -226,11 +234,24 @@ public class OpticalMapSolver implements ISolutionFinder {
     double max = points.get(end);
     int maxIndex = end;
     for (int i = start; i < points.size() && i < end; i++) {
-      if (points.get(i) > max) {
+      if ((points.get(i)) > max && (points.get(i) != 0)) {
         maxIndex = i;
+        max = points.get(i);
       }
     }
     return maxIndex;
+  }
+  
+  private static int minIndex(List<Double> points, int start, int end) {
+    double min = points.get(end);
+    int minIndex = end;
+    for (int i = start; i < points.size() && i < end; i++) {
+      if ((points.get(i)) < min) {
+        minIndex = i;
+        min = points.get(i);
+      }
+    }
+    return minIndex;
   }
 
   private static class RankedOpSample {
