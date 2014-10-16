@@ -63,7 +63,7 @@ public class OpSample implements Iterable<Double> {
 	
 	
 	public double cosine(OpSample other) {
-		return cosine(other, 0.6); // a default digestion rate
+		return cosine(other, 0.65); // a default digestion rate
 	}
 	
 	/**

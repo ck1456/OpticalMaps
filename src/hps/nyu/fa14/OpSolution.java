@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 public class OpSolution {
@@ -12,7 +14,8 @@ public class OpSolution {
 	public final SampleSet set;
 
 	public OpSample ideal;
-
+	public List<Integer> rankedOrder;
+	
 	public final boolean[] isTarget;
 	public final boolean[] isFlipped;
 
@@ -20,6 +23,10 @@ public class OpSolution {
 		this.set = set;
 		isTarget = new boolean[this.set.size()];
 		isFlipped = new boolean[this.set.size()];
+		rankedOrder = new ArrayList<Integer>();
+		for(int i = 0; i < set.size(); i++){
+			rankedOrder.add(i);
+		}
 	}
 
 	public Iterable<OpSample> getTargetSamples() {

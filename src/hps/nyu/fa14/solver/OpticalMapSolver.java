@@ -89,13 +89,25 @@ public class OpticalMapSolver implements ISolutionFinder {
 
       // Calculate the second derivative
       List<Double> diffs = new ArrayList<Double>();
+      List<Integer> rankOrder = new ArrayList<Integer>();
       for (RankedOpSample s : rankedSamples) {
         diffs.add(s.diff);
+        rankOrder.add(s.sampleIndex);
       }
+      nextSolution.rankedOrder = rankOrder;
+      StringBuilder sb = new StringBuilder();
+      for(Double d : diffs){
+    	  sb.append("" + d + ",");
+      }
+      String data = sb.toString();
       List<Double> rankDt = dt(dt(diffs));
       // Find the maximum/minimum and set the cut off
-      int cutoff = maxIndex(rankDt);
-      //System.out.println("Cut off "+cutoff);
+      int cutoff = maxIndex(rankDt, (int)(rankDt.size() * .7), (int)(rankDt.size() *.95)); // We know the error will be in the last 30% (at most)
+      if(nextSolution.set.problemType <= 1) {
+    	  // According to the spec, there are no noise molecules in these problem types.
+    	  cutoff = rankDt.size();
+      }
+//      System.out.println("Cut off "+cutoff);
 
       // choose the top x percent, then mark the others garbage
       for (int i = 0; i < set.size(); i++) {
@@ -195,7 +207,7 @@ public class OpticalMapSolver implements ISolutionFinder {
 	}
 
   private static List<Double> dt(List<Double> points) {
-    int window = 2;
+    int window = 1;
     List<Double> derivatives = new ArrayList<Double>();
     for (int i = 0; i < points.size(); i++) {
       if (i < (points.size() - window)) { // Make sure to return a vector of the same length
@@ -210,10 +222,10 @@ public class OpticalMapSolver implements ISolutionFinder {
     return derivatives;
   }
 
-  private static int maxIndex(List<Double> points) {
-    double max = points.get(0);
-    int maxIndex = 0;
-    for (int i = 0; i < points.size(); i++) {
+  private static int maxIndex(List<Double> points, int start, int end) {
+    double max = points.get(end);
+    int maxIndex = end;
+    for (int i = start; i < points.size() && i < end; i++) {
       if (points.get(i) > max) {
         maxIndex = i;
       }

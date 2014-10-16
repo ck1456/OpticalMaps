@@ -60,7 +60,7 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 
 	public OpticalMapplet() throws Exception {
 		SampleSet set = SampleSet.parse(new FileInputStream(new File(
-				"../data/test_problem_3_num_1.txt")));
+				"../data/test_problem_2_num_1.txt")));
 
 		MapResolver resolver = new MapResolver(set);
 		resolver.viewer = this;
@@ -88,7 +88,8 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		y+=9;
 		
 		// render the target samples
-		for (int i = 0; i < sol.set.size(); i++) {
+//		for (int i = 0; i < sol.set.size(); i++) {
+		for (int i : sol.rankedOrder) {
 			if (sol.isTarget[i] && !sol.isFlipped[i]) {
 				g.setColor(Color.green);
 
@@ -100,9 +101,10 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 					g.drawLine(x, y, x, y + 1);
 				}
 			}
-		}
+		//}
 		
-		for (int i = 0; i < sol.set.size(); i++) {
+		//for (int i = 0; i < sol.set.size(); i++) {
+		//for (int i : sol.rankedOrder) {
 			if (sol.isTarget[i] && sol.isFlipped[i]) {
 				g.setColor(Color.yellow);
 
@@ -117,7 +119,8 @@ public class OpticalMapplet extends Applet implements Runnable, ISolutionViewer 
 		}
 
 		// render noise
-		for (int i = 0; i < sol.set.size(); i++) {
+//		for (int i = 0; i < sol.set.size(); i++) {
+		for (int i : sol.rankedOrder) {
 			if (!sol.isTarget[i]) {
 
 				g.setColor(Color.red);
